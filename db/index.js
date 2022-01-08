@@ -1,11 +1,15 @@
 const { Pool } = require('pg');
-const pool = new Pool({
-  user: 'aaron',
-  host: 'localhost',
-  database: 'my-unsplash',
-  password: '',
-  port: 5432,
-});
+const { user, host, database, password, port } = require('./config.js');
+console.log(user);
+const options = {
+  user,
+  host,
+  database,
+  password,
+  port,
+};
+
+const pool = new Pool(options);
 
 module.exports = {
   query(text, params) {
