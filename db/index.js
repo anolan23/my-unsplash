@@ -1,6 +1,5 @@
 const { Pool } = require('pg');
 const { user, host, database, password, port } = require('./config.js');
-console.log(user);
 const options = {
   user,
   host,
