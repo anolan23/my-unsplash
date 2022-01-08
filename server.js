@@ -5,20 +5,35 @@ const db = require('./db');
 const app = express();
 const port = process.env.PORT || 8080;
 
+app.use(express.json());
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.get('/api/images', async (req, res) => {
+  const { label } = req.query;
   try {
-    const { rows } = await db.query(
-      `
-      SELECT *
-      FROM images
-    `,
-      []
-    );
-    res.send(rows);
+    if (label) {
+      const { rows } = await db.query(
+        `
+        SELECT *
+        FROM images
+        WHERE LOWER(label) ~ LOWER($1)
+      `,
+        [label]
+      );
+      res.send(rows);
+    } else {
+      const { rows } = await db.query(
+        `
+        SELECT *
+        FROM images
+      `,
+        []
+      );
+      res.send(rows);
+    }
   } catch (error) {
     res.status(error.status || 500).send({ error: error.message });
   }
@@ -26,6 +41,7 @@ app.get('/api/images', async (req, res) => {
 
 app.post('/api/images', async (req, res) => {
   try {
+    console.log(req.body);
     const { url, label } = req.body;
     const { rows } = await db.query(
       `
